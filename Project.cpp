@@ -26,6 +26,12 @@ public:
         return name;
     }
 
+    void updateTeamName(std::string name){
+        this->name = name;
+    }
+
+
+
 private:
     int ID;
     std::string name;
@@ -61,7 +67,7 @@ private:
 int main() {
     Team team1(1, "Team A", {"Player 1", "Player 2"});
     Team team2(2, "Team B", {"Player 3", "Player 4"});
-
+    team1.updateTeamName("Strikers");
     team1.registerTeam();
     team2.registerTeam();
 
