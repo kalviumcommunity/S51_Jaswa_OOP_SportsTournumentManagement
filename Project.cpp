@@ -1,13 +1,17 @@
 #include <iostream>
-#include <vector>
 #include <string>
-#include<map>
+#include <map>
 
 // Team class definition
 class Team {
 public:
-    Team(int id, const std::string& name, const std::vector<std::string>& players)
-        : ID(id), name(name), players(players), wins(0), losses(0) {}
+    Team(int id, const std::string& name, const std::string players[], int numPlayers)
+        : ID(id), name(name), wins(0), losses(0) {
+        for (int i = 0; i < numPlayers; ++i) {
+            this->players[i] = players[i];
+        }
+        this->numPlayers = numPlayers;
+    }
 
     void registerTeam() {
         std::cout << "Team " << name << " registered with ID " << ID << "." << std::endl;
@@ -26,20 +30,18 @@ public:
         return name;
     }
 
-    void updateTeamName(std::string name){
-        this->name = name;
+    void updateTeamName(const std::string& newName){
+        name = newName;
     }
-
-
 
 private:
     int ID;
     std::string name;
-    std::vector<std::string> players;
+    std::string players[10]; 
+    int numPlayers;
     int wins;
     int losses;
 };
-
 
 class Match {
 public:
@@ -64,20 +66,28 @@ private:
     std::map<std::string, int> score;
     std::string status;
 };
+
 int main() {
-    Team team1(1, "Team A", {"Player 1", "Player 2"});
-    Team team2(2, "Team B", {"Player 3", "Player 4"});
-    team1.updateTeamName("Strikers");
-    team1.registerTeam();
-    team2.registerTeam();
+    Team teams[2] = {
+        Team(1, "Team A", new std::string[2]{"Player 1", "Player 2"}, 2),
+        Team(2, "Team B", new std::string[2]{"Player 3", "Player 4"}, 2)
+    };
 
-    Match match1(101, team1, team2);
+    teams[0].updateTeamName("Strikers");
 
-    match1.schedule("2024-07-30");
-    match1.play();
+    for (int i = 0; i < 2; ++i) {
+        teams[i].registerTeam();
+    }
 
-    team1.updateStats(true);
-    team2.updateStats(false);
+    Match matches[1] = {
+        Match(101, teams[0], teams[1])
+    };
+
+    matches[0].schedule("2024-07-30");
+    matches[0].play();
+
+    teams[0].updateStats(true);
+    teams[1].updateStats(false);
 
     return 0;
 }
