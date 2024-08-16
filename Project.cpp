@@ -45,6 +45,7 @@ private:
 
 class Match {
 public:
+    Match() : ID(0) {}  
     Match(int id, Team& team1, Team& team2)
         : ID(id), teams(std::make_pair(&team1, &team2)), status("scheduled") {
         score[team1.getName()] = 0;
@@ -79,9 +80,8 @@ int main() {
         teams[i].registerTeam();
     }
 
-    Match matches[1] = {
-        Match(101, teams[0], teams[1])
-    };
+    Match* matches = new Match[1];
+    matches[0] = Match(101, teams[0], teams[1]);
 
     matches[0].schedule("2024-07-30");
     matches[0].play();
