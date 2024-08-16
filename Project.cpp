@@ -80,8 +80,8 @@ int main() {
         teams[i].registerTeam();
     }
 
-    Match* matches = new Match[1];
-    matches[0] = Match(101, teams[0], teams[1]);
+    Match* matches = new Match[1] ;
+    matches[0] = Match(101, teams[0] , teams[1]);
 
     matches[0].schedule("2024-07-30");
     matches[0].play();
@@ -89,5 +89,6 @@ int main() {
     teams[0].updateStats(true);
     teams[1].updateStats(false);
 
+    delete[] matches;
     return 0;
 }
