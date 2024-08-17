@@ -2,15 +2,17 @@
 #include <string>
 #include <map>
 
-// Team class definition
 class Team {
 public:
+    static int totalTeams;  // Static variable to count the number of teams
+
     Team(int id, const std::string& name, const std::string players[], int numPlayers)
         : ID(id), name(name), wins(0), losses(0) {
         for (int i = 0; i < numPlayers; ++i) {
             this->players[i] = players[i];
         }
         this->numPlayers = numPlayers;
+        totalTeams++;  // Increment the static variable whenever a team is created
     }
 
     void registerTeam() {
@@ -30,22 +32,30 @@ public:
         return name;
     }
 
-    void updateTeamName(const std::string& newName){
+    void updateTeamName(const std::string& newName) {
         name = newName;
+    }
+
+    static int getTotalTeams() {  
+        return totalTeams;
     }
 
 private:
     int ID;
     std::string name;
-    std::string players[10]; 
+    std::string players[10];
     int numPlayers;
     int wins;
     int losses;
 };
 
+int Team::totalTeams = 0;  // Initialize the static variable
+
 class Match {
 public:
-    Match() : ID(0) {}  
+    static int totalMatchesPlayed;  // Static variable to count the number of matches played
+
+    Match() : ID(0) {}
     Match(int id, Team& team1, Team& team2)
         : ID(id), teams(std::make_pair(&team1, &team2)), status("scheduled") {
         score[team1.getName()] = 0;
@@ -58,7 +68,12 @@ public:
 
     void play() {
         status = "completed";
+        totalMatchesPlayed++;  // Increment the static variable when a match is played
         std::cout << "Match " << ID << " between " << teams.first->getName() << " and " << teams.second->getName() << " played." << std::endl;
+    }
+
+    static int getTotalMatchesPlayed() {  // Static method to access the static variable
+        return totalMatchesPlayed;
     }
 
 private:
@@ -67,6 +82,8 @@ private:
     std::map<std::string, int> score;
     std::string status;
 };
+
+int Match::totalMatchesPlayed = 0;  // Initialize the static variable
 
 int main() {
     Team teams[2] = {
@@ -80,11 +97,15 @@ int main() {
         teams[i].registerTeam();
     }
 
-    Match* matches = new Match[1] ;
-    matches[0] = Match(101, teams[0] , teams[1]);
+    std::cout << "Total teams registered: " << Team::getTotalTeams() << std::endl;
+
+    Match* matches = new Match[1];
+    matches[0] = Match(101, teams[0], teams[1]);
 
     matches[0].schedule("2024-07-30");
     matches[0].play();
+
+    std::cout << "Total matches played: " << Match::getTotalMatchesPlayed() << std::endl;
 
     teams[0].updateStats(true);
     teams[1].updateStats(false);
