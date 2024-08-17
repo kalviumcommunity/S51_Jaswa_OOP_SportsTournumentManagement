@@ -4,7 +4,7 @@
 
 class Team {
 public:
-    static int totalTeams;  // Static variable to count the number of teams
+    static int totalTeams; 
 
     Team(int id, const std::string& name, const std::string players[], int numPlayers)
         : ID(id), name(name), wins(0), losses(0) {
@@ -12,7 +12,7 @@ public:
             this->players[i] = players[i];
         }
         this->numPlayers = numPlayers;
-        totalTeams++;  // Increment the static variable whenever a team is created
+        totalTeams++;  
     }
 
     void registerTeam() {
@@ -49,11 +49,11 @@ private:
     int losses;
 };
 
-int Team::totalTeams = 0;  // Initialize the static variable
+int Team::totalTeams = 0; 
 
 class Match {
 public:
-    static int totalMatchesPlayed;  // Static variable to count the number of matches played
+    static int totalMatchesPlayed;  
 
     Match() : ID(0) {}
     Match(int id, Team& team1, Team& team2)
@@ -68,11 +68,11 @@ public:
 
     void play() {
         status = "completed";
-        totalMatchesPlayed++;  // Increment the static variable when a match is played
+        totalMatchesPlayed++; 
         std::cout << "Match " << ID << " between " << teams.first->getName() << " and " << teams.second->getName() << " played." << std::endl;
     }
 
-    static int getTotalMatchesPlayed() {  // Static method to access the static variable
+    static int getTotalMatchesPlayed() {  
         return totalMatchesPlayed;
     }
 
@@ -83,7 +83,7 @@ private:
     std::string status;
 };
 
-int Match::totalMatchesPlayed = 0;  // Initialize the static variable
+int Match::totalMatchesPlayed = 0;
 
 int main() {
     Team teams[2] = {
