@@ -4,16 +4,24 @@
 
 class Team {
 public:
-    static int totalTeams;  // Static variable to count the number of teams
+    static int totalTeams;  
 
+    // Constructor
     Team(int id, const std::string& name, const std::string players[], int numPlayers)
         : ID(id), name(name), wins(0), losses(0) {
         for (int i = 0; i < numPlayers; ++i) {
             this->players[i] = players[i];
         }
         this->numPlayers = numPlayers;
-        totalTeams++;  // Increment the static variable whenever a team is created
+        totalTeams++;  
     }
+
+    // Accessor and mutator methods
+    int getID() const { return ID; }  // Accessor for ID
+    std::string getName() const { return name; }  // Accessor for name
+    void updateTeamName(const std::string& newName) { name = newName; }  // Mutator for name
+    int getWins() const { return wins; }  // Accessor for wins
+    int getLosses() const { return losses; }  // Accessor for losses
 
     void registerTeam() {
         std::cout << "Team " << name << " registered with ID " << ID << "." << std::endl;
@@ -26,14 +34,6 @@ public:
             losses++;
         }
         std::cout << "Team " << name << " stats updated: " << wins << " wins, " << losses << " losses." << std::endl;
-    }
-
-    std::string getName() const {
-        return name;
-    }
-
-    void updateTeamName(const std::string& newName) {
-        name = newName;
     }
 
     static int getTotalTeams() {  
@@ -49,11 +49,11 @@ private:
     int losses;
 };
 
-int Team::totalTeams = 0;  // Initialize the static variable
+int Team::totalTeams = 0;  
 
 class Match {
 public:
-    static int totalMatchesPlayed;  // Static variable to count the number of matches played
+    static int totalMatchesPlayed;  
 
     Match() : ID(0) {}
     Match(int id, Team& team1, Team& team2)
@@ -62,17 +62,22 @@ public:
         score[team2.getName()] = 0;
     }
 
+    // Accessor and mutator methods
+    int getID() const { return ID; }  // Accessor for match ID
+    std::string getStatus() const { return status; }  // Accessor for match status
+    void updateStatus(const std::string& newStatus) { status = newStatus; }  // Mutator for match status
+
     void schedule(const std::string& date) {
         std::cout << "Match " << ID << " between " << teams.first->getName() << " and " << teams.second->getName() << " scheduled for " << date << "." << std::endl;
     }
 
     void play() {
         status = "completed";
-        totalMatchesPlayed++;  // Increment the static variable when a match is played
+        totalMatchesPlayed++; 
         std::cout << "Match " << ID << " between " << teams.first->getName() << " and " << teams.second->getName() << " played." << std::endl;
     }
 
-    static int getTotalMatchesPlayed() {  // Static method to access the static variable
+    static int getTotalMatchesPlayed() {  
         return totalMatchesPlayed;
     }
 
@@ -83,7 +88,7 @@ private:
     std::string status;
 };
 
-int Match::totalMatchesPlayed = 0;  // Initialize the static variable
+int Match::totalMatchesPlayed = 0;  
 
 int main() {
     Team teams[2] = {
@@ -91,14 +96,17 @@ int main() {
         Team(2, "Team B", new std::string[2]{"Player 3", "Player 4"}, 2)
     };
 
+    // Using mutator method to update the team name
     teams[0].updateTeamName("Strikers");
 
+    // Registering teams
     for (int i = 0; i < 2; ++i) {
         teams[i].registerTeam();
     }
 
     std::cout << "Total teams registered: " << Team::getTotalTeams() << std::endl;
 
+    // Creating and scheduling a match
     Match* matches = new Match[1];
     matches[0] = Match(101, teams[0], teams[1]);
 
@@ -107,8 +115,13 @@ int main() {
 
     std::cout << "Total matches played: " << Match::getTotalMatchesPlayed() << std::endl;
 
+    // Updating team stats
     teams[0].updateStats(true);
     teams[1].updateStats(false);
+
+    // Using accessor methods to retrieve data
+    std::cout << teams[0].getName() << " has " << teams[0].getWins() << " wins and " << teams[0].getLosses() << " losses." << std::endl;
+    std::cout << teams[1].getName() << " has " << teams[1].getWins() << " wins and " << teams[1].getLosses() << " losses." << std::endl;
 
     delete[] matches;
     return 0;
