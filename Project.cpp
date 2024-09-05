@@ -4,7 +4,7 @@
 
 class Team {
 public:
-    static int totalTeams;  
+
 
     // Constructor
     Team(int id, const std::string& name, const std::string players[], int numPlayers)
@@ -49,7 +49,7 @@ private:
     int losses;
 };
 
-int Team::totalTeams = 0;  
+
 
 class Match {
 public:
@@ -88,7 +88,6 @@ private:
     std::string status;
 };
 
-int Match::totalMatchesPlayed = 0;  
 
 int main() {
     Team teams[2] = {
