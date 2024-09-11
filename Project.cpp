@@ -6,22 +6,23 @@ class Team {
 public:
 
 
-    // Constructor
+    // Constructor 
+    
     Team(int id, const std::string& name, const std::string players[], int numPlayers)
         : ID(id), name(name), wins(0), losses(0) {
         for (int i = 0; i < numPlayers; ++i) {
             this->players[i] = players[i];
-        }
-        this->numPlayers = numPlayers;
+         }
+        this->numPlayers =  numPlayers;
         totalTeams++;  
     }
 
     // Accessor and mutator methods
-    int getID() const { return ID; }  // Accessor for ID
-    std::string getName() const { return name; }  // Accessor for name
-    void updateTeamName(const std::string& newName) { name = newName; }  // Mutator for name
-    int getWins() const { return wins; }  // Accessor for wins
-    int getLosses() const { return losses; }  // Accessor for losses
+    int getID() const { return ID; }  
+    std::string getName() const { return name; }  
+    void updateTeamName(const std::string& newName) { name = newName; }  
+    int getWins() const { return wins; }  
+    int getLosses() const { return losses; }  
 
     void registerTeam() {
         std::cout << "Team " << name << " registered with ID " << ID << "." << std::endl;
@@ -40,6 +41,10 @@ public:
         return totalTeams;
     }
 
+     ~Team() {
+        std::cout << "Destructor called for Team " << name << std::endl;
+    } //Destructor
+
 private:
     int ID;
     std::string name;
@@ -47,6 +52,9 @@ private:
     int numPlayers;
     int wins;
     int losses;
+
+
+
 };
 
 
@@ -80,6 +88,10 @@ public:
     static int getTotalMatchesPlayed() {  
         return totalMatchesPlayed;
     }
+
+    ~Match() {
+        std::cout << "Destructor called for Match " << ID << std::endl;
+    } //Destructor
 
 private:
     int ID;
