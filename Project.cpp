@@ -82,30 +82,40 @@ private:
     std::string tournament;
 };
 
-// Match class remains unchanged
+// Match class with Constructor Overloading (Polymorphism)
 class Match {
 public:
     static int totalMatchesPlayed;
 
-    Match() : ID(0) {}
+    // Default constructor
+    Match() : ID(0), status("unscheduled") {}
+
+    // Constructor overloading: Match with teams
     Match(int id, Team& team1, Team& team2)
         : ID(id), teams(std::make_pair(&team1, &team2)), status("scheduled") {
         score[team1.getName()] = 0;
         score[team2.getName()] = 0;
     }
 
+    // Constructor overloading: Match without teams (e.g., match can be scheduled later)
+    Match(int id)
+        : ID(id), status("pending teams") {
+        std::cout << "Match " << ID << " is created without teams." << std::endl;
+    }
+
+    // Accessor and mutator methods
     int getID() const { return ID; }
     std::string getStatus() const { return status; }
     void updateStatus(const std::string& newStatus) { status = newStatus; }
 
     void schedule(const std::string& date) {
-        std::cout << "Match " << ID << " between " << teams.first->getName() << " and " << teams.second->getName() << " scheduled for " << date << "." << std::endl;
+        std::cout << "Match " << ID << " scheduled for " << date << "." << std::endl;
     }
 
     void play() {
         status = "completed";
         totalMatchesPlayed++;
-        std::cout << "Match " << ID << " between " << teams.first->getName() << " and " << teams.second->getName() << " played." << std::endl;
+        std::cout << "Match " << ID << " played." << std::endl;
     }
 
     static int getTotalMatchesPlayed() {
@@ -137,9 +147,14 @@ int main() {
     std::cout << "Team A is in " << teamA.getLeague() << " and participating in " << teamA.getTournament() << std::endl;
     std::cout << "Team B is in " << teamB.getLeague() << " and participating in " << teamB.getTournament() << std::endl;
 
-    // Scheduling and playing a match
-    Match match1(101, teamA, teamB);
+    // Scheduling matches
+    Match match1(101, teamA, teamB);  // Match with teams
     match1.schedule("2024-07-30");
+
+    Match match2(102);  // Match without teams initially
+    match2.schedule("2024-08-05");
+
+    // Playing a match
     match1.play();
 
     std::cout << "Total matches played: " << Match::getTotalMatchesPlayed() << std::endl;
