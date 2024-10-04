@@ -2,7 +2,7 @@
 #include <string>
 #include <map>
 
-// Base class: Team
+// Abstract class: Team
 class Team {
 public:
     static int totalTeams;
@@ -17,16 +17,15 @@ public:
         totalTeams++;
     }
 
+    // Pure virtual function (abstract method) to display team information
+    virtual void displayTeamInfo() const = 0; // Abstract method
+
     // Accessor and mutator methods
     int getID() const { return ID; }
     std::string getName() const { return name; }
     void updateTeamName(const std::string& newName) { name = newName; }
     int getWins() const { return wins; }
     int getLosses() const { return losses; }
-
-    void registerTeam() {
-        std::cout << "Team " << name << " registered with ID " << ID << "." << std::endl;
-    }
 
     void updateStats(bool win) {
         if (win) {
@@ -41,7 +40,7 @@ public:
         return totalTeams;
     }
 
-    ~Team() {
+    virtual ~Team() {
         std::cout << "Destructor called for Team " << name << std::endl;
     }
 
@@ -65,6 +64,11 @@ public:
     std::string getLeague() const { return league; }
     void updateLeague(const std::string& newLeague) { league = newLeague; }
 
+    // Overriding the abstract method in derived class
+    void displayTeamInfo() const override {
+        std::cout << "League Team " << getName() << " is in the league: " << league << std::endl;
+    }
+
 private:
     std::string league;
 };
@@ -77,6 +81,11 @@ public:
 
     std::string getTournament() const { return tournament; }
     void updateTournament(const std::string& newTournament) { tournament = newTournament; }
+
+    // Overriding the abstract method in derived class
+    void displayTeamInfo() const override {
+        std::cout << "Tournament Team " << getName() << " is participating in " << tournament << std::endl;
+    }
 
 private:
     std::string tournament;
@@ -140,12 +149,9 @@ int main() {
     TournamentTeam teamA(1, "Team A", new std::string[2]{"Player 1", "Player 2"}, 2, "Premier League", "Champions Cup");
     TournamentTeam teamB(2, "Team B", new std::string[2]{"Player 3", "Player 4"}, 2, "Premier League", "Champions Cup");
 
-    // Register teams
-    teamA.registerTeam();
-    teamB.registerTeam();
-
-    std::cout << "Team A is in " << teamA.getLeague() << " and participating in " << teamA.getTournament() << std::endl;
-    std::cout << "Team B is in " << teamB.getLeague() << " and participating in " << teamB.getTournament() << std::endl;
+    // Register teams and display their info
+    teamA.displayTeamInfo();
+    teamB.displayTeamInfo();
 
     // Scheduling matches
     Match match1(101, teamA, teamB);  // Match with teams
