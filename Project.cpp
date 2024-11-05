@@ -1,56 +1,63 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <map>
 
-// Abstract class: Team
-class Team {
+// Player class for managing individual player details
+class Player {
 public:
-    static int totalTeams;
+    Player(const std::string& name) : name(name) {}
 
-    // Constructor
-    Team(int id, const std::string& name, const std::string players[], int numPlayers)
-        : ID(id), name(name), wins(0), losses(0) {
-        for (int i = 0; i < numPlayers; ++i) {
-            this->players[i] = players[i];
-        }
-        this->numPlayers = numPlayers;
-        totalTeams++;
-    }
-
-    // Pure virtual function (abstract method) to display team information
-    virtual void displayTeamInfo() const = 0; // Abstract method
-
-    // Accessor and mutator methods
-    int getID() const { return ID; }
     std::string getName() const { return name; }
-    void updateTeamName(const std::string& newName) { name = newName; }
-    int getWins() const { return wins; }
-    int getLosses() const { return losses; }
 
+private:
+    std::string name;
+};
+
+// TeamStatistics class for tracking wins and losses
+class TeamStatistics {
+public:
     void updateStats(bool win) {
         if (win) {
             wins++;
         } else {
             losses++;
         }
-        std::cout << "Team " << name << " stats updated: " << wins << " wins, " << losses << " losses." << std::endl;
+        std::cout << "Updated stats: " << wins << " wins, " << losses << " losses." << std::endl;
     }
 
-    static int getTotalTeams() {
-        return totalTeams;
+    int getWins() const { return wins; }
+    int getLosses() const { return losses; }
+
+private:
+    int wins = 0;
+    int losses = 0;
+};
+
+// Abstract class: Team
+class Team {
+public:
+    static int totalTeams;
+
+    Team(int id, const std::string& name, const std::vector<Player>& players)
+        : ID(id), name(name), players(players) {
+        totalTeams++;
     }
+
+    virtual void displayTeamInfo() const = 0; // Abstract method
+
+    std::string getName() const { return name; }
+    TeamStatistics& getStatistics() { return statistics; }
 
     virtual ~Team() {
         std::cout << "Destructor called for Team " << name << std::endl;
     }
 
-private:
+protected:
     int ID;
     std::string name;
-    std::string players[10];
-    int numPlayers;
-    int wins;
-    int losses;
+    std::vector<Player> players;
+    TeamStatistics statistics;
 };
 
 int Team::totalTeams = 0;
@@ -58,13 +65,9 @@ int Team::totalTeams = 0;
 // Derived class from Team: LeagueTeam (Single Inheritance)
 class LeagueTeam : public Team {
 public:
-    LeagueTeam(int id, const std::string& name, const std::string players[], int numPlayers, const std::string& league)
-        : Team(id, name, players, numPlayers), league(league) {}
+    LeagueTeam(int id, const std::string& name, const std::vector<Player>& players, const std::string& league)
+        : Team(id, name, players), league(league) {}
 
-    std::string getLeague() const { return league; }
-    void updateLeague(const std::string& newLeague) { league = newLeague; }
-
-    // Overriding the abstract method in derived class
     void displayTeamInfo() const override {
         std::cout << "League Team " << getName() << " is in the league: " << league << std::endl;
     }
@@ -73,22 +76,21 @@ private:
     std::string league;
 };
 
-// Derived class from LeagueTeam: TournamentTeam (Multilevel Inheritance)
-class TournamentTeam : public LeagueTeam {
+// Schedule class for managing match scheduling
+class Schedule {
 public:
-    TournamentTeam(int id, const std::string& name, const std::string players[], int numPlayers, const std::string& league, const std::string& tournament)
-        : LeagueTeam(id, name, players, numPlayers, league), tournament(tournament) {}
+    void scheduleMatch(int matchID, const std::string& date) {
+        matchDates[matchID] = date;
+        std::cout << "Match " << matchID << " scheduled for " << date << "." << std::endl;
+    }
 
-    std::string getTournament() const { return tournament; }
-    void updateTournament(const std::string& newTournament) { tournament = newTournament; }
-
-    // Overriding the abstract method in derived class
-    void displayTeamInfo() const override {
-        std::cout << "Tournament Team " << getName() << " is participating in " << tournament << std::endl;
+    std::string getMatchDate(int matchID) const {
+        auto it = matchDates.find(matchID);
+        return it != matchDates.end() ? it->second : "Date not found";
     }
 
 private:
-    std::string tournament;
+    std::map<int, std::string> matchDates;
 };
 
 // Match class with Constructor Overloading (Polymorphism)
@@ -96,30 +98,13 @@ class Match {
 public:
     static int totalMatchesPlayed;
 
-    // Default constructor
-    Match() : ID(0), status("unscheduled") {}
-
-    // Constructor overloading: Match with teams
     Match(int id, Team& team1, Team& team2)
         : ID(id), teams(std::make_pair(&team1, &team2)), status("scheduled") {
         score[team1.getName()] = 0;
         score[team2.getName()] = 0;
     }
 
-    // Constructor overloading: Match without teams (e.g., match can be scheduled later)
-    Match(int id)
-        : ID(id), status("pending teams") {
-        std::cout << "Match " << ID << " is created without teams." << std::endl;
-    }
-
-    // Accessor and mutator methods
-    int getID() const { return ID; }
-    std::string getStatus() const { return status; }
-    void updateStatus(const std::string& newStatus) { status = newStatus; }
-
-    void schedule(const std::string& date) {
-        std::cout << "Match " << ID << " scheduled for " << date << "." << std::endl;
-    }
+    Match(int id) : ID(id), status("pending teams") {}
 
     void play() {
         status = "completed";
@@ -145,22 +130,24 @@ private:
 int Match::totalMatchesPlayed = 0;
 
 int main() {
-    // Creating TournamentTeam objects (Multilevel Inheritance)
-    TournamentTeam teamA(1, "Team A", new std::string[2]{"Player 1", "Player 2"}, 2, "Premier League", "Champions Cup");
-    TournamentTeam teamB(2, "Team B", new std::string[2]{"Player 3", "Player 4"}, 2, "Premier League", "Champions Cup");
+    // Creating players
+    std::vector<Player> teamAPlayers = {Player("Player 1"), Player("Player 2")};
+    std::vector<Player> teamBPlayers = {Player("Player 3"), Player("Player 4")};
 
-    // Register teams and display their info
+    // Creating teams
+    LeagueTeam teamA(1, "Team A", teamAPlayers, "Premier League");
+    LeagueTeam teamB(2, "Team B", teamBPlayers, "Premier League");
+
+    // Displaying team info
     teamA.displayTeamInfo();
     teamB.displayTeamInfo();
 
-    // Scheduling matches
-    Match match1(101, teamA, teamB);  // Match with teams
-    match1.schedule("2024-07-30");
-
-    Match match2(102);  // Match without teams initially
-    match2.schedule("2024-08-05");
+    // Creating and scheduling matches
+    Schedule schedule;
+    schedule.scheduleMatch(101, "2024-07-30");
 
     // Playing a match
+    Match match1(101, teamA, teamB);
     match1.play();
 
     std::cout << "Total matches played: " << Match::getTotalMatchesPlayed() << std::endl;
