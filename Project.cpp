@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 // Player class for managing individual player details
 class Player {
@@ -114,7 +115,7 @@ public:
         std::cout << "Destructor called for Match " << ID << std::endl;
     }
 
-private:
+protected:
     int ID;
     std::pair<Team*, Team*> teams;
     std::map<std::string, int> score;
@@ -166,12 +167,14 @@ int main() {
     Schedule schedule;
     schedule.scheduleMatch(101, "2024-07-30");
 
-    // Playing matches
-    LeagueMatch leagueMatch(101, teamA, teamB, "Premier League");
-    leagueMatch.play();
+    // Using polymorphism to play matches
+    std::vector<std::unique_ptr<Match>> matches;
+    matches.push_back(std::make_unique<LeagueMatch>(101, teamA, teamB, "Premier League"));
+    matches.push_back(std::make_unique<TournamentMatch>(102, teamA, teamB, "Champions Cup"));
 
-    TournamentMatch tournamentMatch(102, teamA, teamB, "Champions Cup");
-    tournamentMatch.play();
+    for (const auto& match : matches) {
+        match->play();
+    }
 
     std::cout << "Total matches played: " << Match::getTotalMatchesPlayed() << std::endl;
 
