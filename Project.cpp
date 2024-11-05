@@ -44,7 +44,7 @@ public:
         totalTeams++;
     }
 
-    virtual void displayTeamInfo() const = 0; // Abstract method
+    virtual void displayTeamInfo() const = 0;
 
     std::string getName() const { return name; }
     TeamStatistics& getStatistics() { return statistics; }
@@ -93,7 +93,7 @@ private:
     std::map<int, std::string> matchDates;
 };
 
-// Match class with Constructor Overloading (Polymorphism)
+// Base Match class
 class Match {
 public:
     static int totalMatchesPlayed;
@@ -104,19 +104,13 @@ public:
         score[team2.getName()] = 0;
     }
 
-    Match(int id) : ID(id), status("pending teams") {}
-
-    void play() {
+    virtual void play() {
         status = "completed";
         totalMatchesPlayed++;
         std::cout << "Match " << ID << " played." << std::endl;
     }
 
-    static int getTotalMatchesPlayed() {
-        return totalMatchesPlayed;
-    }
-
-    ~Match() {
+    virtual ~Match() {
         std::cout << "Destructor called for Match " << ID << std::endl;
     }
 
@@ -129,6 +123,36 @@ private:
 
 int Match::totalMatchesPlayed = 0;
 
+// Derived class from Match: LeagueMatch
+class LeagueMatch : public Match {
+public:
+    LeagueMatch(int id, Team& team1, Team& team2, const std::string& leagueName)
+        : Match(id, team1, team2), leagueName(leagueName) {}
+
+    void play() override {
+        Match::play();
+        std::cout << "This is a league match in " << leagueName << " league." << std::endl;
+    }
+
+private:
+    std::string leagueName;
+};
+
+// Derived class from Match: TournamentMatch
+class TournamentMatch : public Match {
+public:
+    TournamentMatch(int id, Team& team1, Team& team2, const std::string& tournamentName)
+        : Match(id, team1, team2), tournamentName(tournamentName) {}
+
+    void play() override {
+        Match::play();
+        std::cout << "This is a tournament match in " << tournamentName << " tournament." << std::endl;
+    }
+
+private:
+    std::string tournamentName;
+};
+
 int main() {
     // Creating players
     std::vector<Player> teamAPlayers = {Player("Player 1"), Player("Player 2")};
@@ -138,17 +162,16 @@ int main() {
     LeagueTeam teamA(1, "Team A", teamAPlayers, "Premier League");
     LeagueTeam teamB(2, "Team B", teamBPlayers, "Premier League");
 
-    // Displaying team info
-    teamA.displayTeamInfo();
-    teamB.displayTeamInfo();
-
     // Creating and scheduling matches
     Schedule schedule;
     schedule.scheduleMatch(101, "2024-07-30");
 
-    // Playing a match
-    Match match1(101, teamA, teamB);
-    match1.play();
+    // Playing matches
+    LeagueMatch leagueMatch(101, teamA, teamB, "Premier League");
+    leagueMatch.play();
+
+    TournamentMatch tournamentMatch(102, teamA, teamB, "Champions Cup");
+    tournamentMatch.play();
 
     std::cout << "Total matches played: " << Match::getTotalMatchesPlayed() << std::endl;
 
